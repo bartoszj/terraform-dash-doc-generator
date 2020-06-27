@@ -127,6 +127,9 @@ task :copy do
       doc.xpath("//link[starts-with(@href, '/')]").each do |e|
         e["href"] = Pathname.new(e["href"]).relative_path_from(Pathname.new("/#{path}").dirname).to_s
       end
+      doc.xpath("//a[starts-with(@href, '/')]").each do |e|
+        e["href"] = Pathname.new(e["href"]).relative_path_from(Pathname.new("/#{path}").dirname).to_s
+      end
 
       doc.xpath('//script').each do |script|
         if script.text != ""
@@ -145,6 +148,9 @@ task :copy do
       doc.xpath("//div[contains(@class, 'mega-nav-sandbox')]").each do |e|
         e.remove
       end
+      doc.xpath("//div[contains(@class, 'oics-button')]").each do |e|
+        e.remove
+      end
       doc.xpath("//div[contains(@class, 'docs-sidebar')]").each do |e|
         e.parent.remove
       end
@@ -159,7 +165,7 @@ task :copy do
         e["style"] = "margin-top: 0px"
       end
       doc.xpath("//div[contains(@class, 'container')]").each do |e|
-        e["style"] = "width: 100%; margin-top: 30px; margin-left: 30px; margin-right: 30px;"
+        e["style"] = "width: 100%; padding-top: 30px; padding-left: 30px; padding-right: 30px;"
       end
       doc.xpath("//div[contains(@role, 'main')]").each do |e|
         e["style"] = "width: 100%"
