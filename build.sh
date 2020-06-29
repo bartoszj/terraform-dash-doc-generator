@@ -33,6 +33,7 @@ ln -s "${CWD}/Rakefile" || true
 cp "${CWD}/.ruby-version" ./
 
 # Build
+ulimit -n 16000
 rake
 
 mv Terraform.tgz "${BUILD_PATH}"

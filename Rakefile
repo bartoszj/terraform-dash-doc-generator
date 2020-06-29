@@ -32,11 +32,27 @@ class Index
 
   def insert(type, path)
     doc = Nokogiri::HTML(File.open(path).read)
-    unless doc.title.nil?
-      name = doc.title.sub(" - Terraform by HashiCorp", "").sub(/.*: (.*)/, "\\1")
-    else
-      name = File.basename(path)
+
+    header = doc.xpath("//div[@id='inner']/h1").first
+    if header.nil?
+      header = doc.xpath("//div[@id='inner']/h2").first
     end
+    if header.nil?
+      header = doc.xpath("//body/h1").first
+    end
+
+    unless header.nil?
+      name = header.content.match(/(\w+.+)/)[0].strip.sub(/.*: (.*)/m, "\\1")
+    end 
+
+    if name.nil? or name.empty?
+      name = File.basename(path, ".*")
+    end
+
+    name = name.sub("(Deprecated)", "")
+
+    raise "Empty name for #{path}" if name.nil? or name.empty?
+
     @db.execute <<-SQL, name: name, type: type, path: path
       INSERT OR IGNORE INTO searchIndex (name, type, path)
       VALUES(:name, :type, :path)
@@ -229,6 +245,7 @@ task :create_index do
     Dir.glob("docs/providers/**/*")
       .find_all{ |f| File.stat(f).file? }.each do |path|
 
+      next unless path.match(/\.html$/)
       maybe_type_code = path.split("/").reverse.drop(1).first
 
       if maybe_type_code == "r"
