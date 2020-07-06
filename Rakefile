@@ -161,6 +161,9 @@ task :copy do
       doc.xpath("id('inner-header-grid')").each do |e|
         e.remove
       end
+      doc.xpath("//div[contains(@class, 'g-alert-banner')]").each do |e|
+        e.remove
+      end
       doc.xpath("//div[contains(@class, 'mega-nav-sandbox')]").each do |e|
         e.remove
       end
