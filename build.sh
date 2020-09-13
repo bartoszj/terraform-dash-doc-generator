@@ -19,13 +19,8 @@ rm -rf "${BUILD_PATH}"
 mkdir -p "${BUILD_PATH}"
 
 # Checkout and clean
-git clone "https://github.com/hashicorp/terraform-website.git" || true
+./git_get.sh
 cd "${TERRAFORM_PATH}"
-git clean -fdx
-git checkout -- .
-git checkout master
-git reset --hard origin/master
-make sync
 
 rm Rakefile || true
 # cp "${CWD}/Rakefile" .

@@ -65,10 +65,15 @@ task default: [:clean, :build, :setup, :copy, :create_index, :package]
 task :clean do
   rm_rf "build"
   rm_rf "Terraform.docset"
+  rm_rf "Terraform.tgz"
 end
 
 task :build do
-  sh "make build"
+  sh "make build | tee build.log | egrep \"error\\W+\\w+\\s+build\" | grep -v \"providers/ad\" | grep -v \"providers/kubernetes-alpha\" | grep -c error" do |ok, res|
+    if ok
+      raise "An error occured during the build. Please check build.log file."
+    end
+  end
 end
 
 task :setup do

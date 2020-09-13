@@ -4,3 +4,4 @@ Gemfile.lock
 terraform/
 terraform-dash-doc-generator.iml
 terraform-website/
+terraform-provider-*/
