@@ -69,7 +69,7 @@ task :clean do
 end
 
 task :build do
-  sh "make build | tee build.log | egrep \"error\\W+\\w+\\s+build\" | grep -v \"providers/ad\" | grep -v \"providers/kubernetes-alpha\" | grep -c error" do |ok, res|
+  sh "make build | tee build.log | egrep \"error\\W+\\w+\\s+build\" | grep -v \"providers/ad\" | grep -v \"providers/hashicups\" | grep -v \"providers/kubernetes-alpha\" | grep -c error" do |ok, res|
     if ok
       raise "An error occured during the build. Please check build.log file."
     end
@@ -157,12 +157,16 @@ task :copy do
           script.remove
         end
       end
+      doc.xpath("//header").each do |e|
+        e.remove
+      end
       doc.xpath("//aside").each do |e|
         e.remove
       end
       doc.xpath("id('header')").each do |e|
         e.remove
       end
+      # Old?
       doc.xpath("id('inner-header-grid')").each do |e|
         e.remove
       end

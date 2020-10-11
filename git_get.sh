@@ -71,8 +71,11 @@ popd
 get_repositories "hashicorp"
 get_repositories "terraform-providers"
 get_repositories "cloudflare" "cloudflare"
+get_repositories "DataDog" "datadog"
 get_repositories "digitalocean" "digitalocean"
 get_repositories "fastly" "fastly"
+get_repositories "gitlabhq" "gitlab"
+get_repositories "grafana" "grafana"
 get_repositories "heroku" "heroku"
 get_repositories "mongodb" "mongodbatlas"
 get_repositories "newrelic" "newrelic"
@@ -120,4 +123,8 @@ done
 
 # Fixes
 ## Remove `layout: "aws"` from AWS docs
-find ${TERRAFORM_PATH}/ext/providers/aws/website/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
+if [[ ${OSTYPE} == "linux-gnu"* ]]; then
+  find ${TERRAFORM_PATH}/ext/providers/aws/website/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i"" {} \;
+else
+  find ${TERRAFORM_PATH}/ext/providers/aws/website/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
+fi
