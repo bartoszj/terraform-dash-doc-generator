@@ -17,6 +17,9 @@ TERRAFORM_PATH="${CWD}/terraform-website"
 # Clean build
 rm -rf "${BUILD_PATH}"
 mkdir -p "${BUILD_PATH}"
+if [[ ${OSTYPE} == "linux-gnu"* ]] && [[ -d ${TERRAFORM_PATH} ]]; then
+  sudo chown -R $(id -u):$(id -g) ${TERRAFORM_PATH}
+fi
 
 # Checkout and clean
 ./git_get.sh
