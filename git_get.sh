@@ -24,7 +24,12 @@ get_repositories() {
   local local_provider_names=()
   local local_provider_urls=()
   while :; do
-    local data=$(curl "${CURL_PARAMETERS[@]}" -s "https://api.github.com/orgs/${org}/repos?per_page=100&page=${page}" | jq -r)
+    local found=$(curl "${CURL_PARAMETERS[@]}" -s "https://api.github.com/orgs/${org}/repos?per_page=100&page=${page}" -o /dev/null -w "%{http_code}")
+    if [[ "${found}" != "404" ]]; then
+      local data=$(curl "${CURL_PARAMETERS[@]}" -s "https://api.github.com/orgs/${org}/repos?per_page=100&page=${page}" | jq -r)
+    else
+      local data=$(curl "${CURL_PARAMETERS[@]}" -s "https://api.github.com/users/${org}/repos?per_page=100&page=${page}" | jq -r)
+    fi
     local names=($(echo ${data} | jq -r .[].name))
 
     local_provider_names+=($(echo ${data} | jq -r ".[] | select(.name | test(\"^terraform-provider\")) | select(.archived | not) | .name"))
