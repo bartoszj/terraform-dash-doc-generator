@@ -70,9 +70,11 @@ popd
 
 get_repositories "hashicorp"
 get_repositories "terraform-providers"
+get_repositories "vancluever" "acme"
 get_repositories "cloudflare" "cloudflare"
 get_repositories "DataDog" "datadog"
 get_repositories "digitalocean" "digitalocean"
+get_repositories "kreuzwerker" "docker"
 get_repositories "fastly" "fastly"
 get_repositories "gitlabhq" "gitlab"
 get_repositories "grafana" "grafana"
@@ -80,6 +82,9 @@ get_repositories "heroku" "heroku"
 get_repositories "mongodb" "mongodbatlas"
 get_repositories "newrelic" "newrelic"
 get_repositories "PagerDuty" "pagerduty"
+get_repositories "cyrilgdn" "postgresql"
+get_repositories "cyrilgdn" "rabbitmq"
+get_repositories "rancher" "rancher2"
 
 # Clone
 count=${#provider_names[@]}
