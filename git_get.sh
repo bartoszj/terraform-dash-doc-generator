@@ -137,10 +137,8 @@ if [[ ${OSTYPE} == "linux-gnu"* ]]; then
   find ${TERRAFORM_PATH}/ext/providers/aws/website/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i"" {} \;
   find ${TERRAFORM_PATH}/ext/providers/gitlab/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i"" {} \;
   find ${TERRAFORM_PATH}/ext/providers/rancher2/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i"" {} \;
-  find ${TERRAFORM_PATH}/ext/providers/scaffolding/website/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i"" {} \;
 else
   find ${TERRAFORM_PATH}/ext/providers/aws/website/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
   find ${TERRAFORM_PATH}/ext/providers/gitlab/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
   find ${TERRAFORM_PATH}/ext/providers/rancher2/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
-  find ${TERRAFORM_PATH}/ext/providers/scaffolding/website/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
 fi
