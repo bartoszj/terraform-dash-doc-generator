@@ -69,7 +69,7 @@ task :clean do
 end
 
 task :build do
-  sh "make build | tee build.log | egrep \"error\\W+\\w+\\s+build\" | grep -v \"providers/ad\" | grep -v \"providers/hashicups\" | grep -v \"providers/kubernetes-alpha\" | grep -c error" do |ok, res|
+  sh "make build | tee build.log | egrep \"error\\W+\\w+\\s+build\" | grep -v \"providers/ad\" | grep -v \"providers/datadog\" | grep -v \"providers/fakewebservices\" | grep -v \"providers/hashicups\" | grep -v \"providers/hcp\" | grep -v \"providers/hcs\" | grep -v \"providers/kubernetes-alpha\" | grep -c error" do |ok, res|
     if ok
       raise "An error occured during the build. Please check build.log file."
     end

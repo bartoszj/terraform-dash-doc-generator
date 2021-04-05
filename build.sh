@@ -35,3 +35,5 @@ ulimit -n 16000 || true
 rake
 
 mv Terraform.tgz "${BUILD_PATH}"
+
+# cat terraform-website/build.log | egrep "error\W+\\w+\s+build"

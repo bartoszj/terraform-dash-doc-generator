@@ -2,6 +2,8 @@
 
 set -e
 
+echo "Pulling additional providers"
+
 # Paths
 CWD=$(pwd)
 TERRAFORM_PATH="${CWD}/terraform-website"
@@ -76,18 +78,22 @@ popd
 get_repositories "hashicorp"
 get_repositories "terraform-providers"
 get_repositories "vancluever" "acme"
+get_repositories "microsoft" "azuredevops"
 get_repositories "cloudflare" "cloudflare"
 get_repositories "DataDog" "datadog"
 get_repositories "digitalocean" "digitalocean"
 get_repositories "kreuzwerker" "docker"
 get_repositories "fastly" "fastly"
+get_repositories "integrations" "github"
 get_repositories "gitlabhq" "gitlab"
 get_repositories "grafana" "grafana"
 get_repositories "heroku" "heroku"
 get_repositories "mongodb" "mongodbatlas"
 get_repositories "newrelic" "newrelic"
+get_repositories "oktadeveloper" "okta"
 get_repositories "PagerDuty" "pagerduty"
 get_repositories "cyrilgdn" "postgresql"
+get_repositories "PaloAltoNetworks" "prismacloud"
 get_repositories "cyrilgdn" "rabbitmq"
 get_repositories "rancher" "rancher2"
 
@@ -133,12 +139,20 @@ done
 
 # Fixes
 ## Remove `layout:` from some providers
+CLEANUP_FOLDERS=(
+  ${TERRAFORM_PATH}/ext/providers/aws/website/docs
+  ${TERRAFORM_PATH}/ext/providers/azurerm/website/docs
+  ${TERRAFORM_PATH}/ext/providers/gitlab/docs
+  ${TERRAFORM_PATH}/ext/providers/heroku/docs
+  ${TERRAFORM_PATH}/ext/providers/fastly/docs
+  ${TERRAFORM_PATH}/ext/providers/rancher2/docs
+)
 if [[ ${OSTYPE} == "linux-gnu"* ]]; then
-  find ${TERRAFORM_PATH}/ext/providers/aws/website/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i"" {} \;
-  find ${TERRAFORM_PATH}/ext/providers/gitlab/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i"" {} \;
-  find ${TERRAFORM_PATH}/ext/providers/rancher2/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i"" {} \;
+  for cleanup_folder in ${CLEANUP_FOLDERS[@]}; do
+    find ${cleanup_folder} \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i"" {} \;
+  done
 else
-  find ${TERRAFORM_PATH}/ext/providers/aws/website/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
-  find ${TERRAFORM_PATH}/ext/providers/gitlab/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
-  find ${TERRAFORM_PATH}/ext/providers/rancher2/docs \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
+  for cleanup_folder in ${CLEANUP_FOLDERS[@]}; do
+    find ${cleanup_folder} \( -name "*.markdown" -or -name "*.md" \) -exec sed -e "/layout:/d" -i "" {} \;
+  done
 fi
