@@ -6,8 +6,8 @@ This projects essence has been taken from https://github.com/f440/terraform/tree
 ### Installation
 
 ```bash
-rbenv install 2.5.3
-gem install -N bundler rake sqlite3
+rbenv install 2.7.3
+gem install -N rake sqlite3 nokogiri
 ```
 
 ### Terraform

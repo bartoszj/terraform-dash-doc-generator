@@ -43,20 +43,23 @@ class Index
 
     unless header.nil?
       name = header.content.match(/(\w+.+)/)[0].strip.sub(/.*: (.*)/m, "\\1")
-    end 
+    end
 
     if name.nil? or name.empty?
       name = File.basename(path, ".*")
     end
 
     name = name.sub("(Deprecated)", "")
+    name = name.sub(" Function", "")
 
     raise "Empty name for #{path}" if name.nil? or name.empty?
 
-    @db.execute <<-SQL, name: name, type: type, path: path
-      INSERT OR IGNORE INTO searchIndex (name, type, path)
-      VALUES(:name, :type, :path)
-    SQL
+    @db.transaction do |db|
+      db.execute <<-SQL, name: name, type: type, path: path
+        INSERT OR IGNORE INTO searchIndex (name, type, path)
+        VALUES(:name, :type, :path)
+      SQL
+    end
   end
 end
 
@@ -151,6 +154,9 @@ task :copy do
       doc.xpath("//a[starts-with(@href, '/')]").each do |e|
         e["href"] = Pathname.new(e["href"]).relative_path_from(Pathname.new("/#{path}").dirname).to_s
       end
+      doc.xpath("//img[starts-with(@src, '/')]").each do |e|
+        e["src"] = Pathname.new(e["src"]).relative_path_from(Pathname.new("/#{path}").dirname).to_s
+      end
 
       doc.xpath('//script').each do |script|
         if script.text != ""
@@ -211,47 +217,55 @@ task :create_index do
   index.reset
 
   Dir.chdir("Terraform.docset/Contents/Resources/Documents") do
-    # example
-    Dir.glob("intro/examples/**/*")
-      .find_all{ |f| File.stat(f).file? }.each do |path|
-
-      index.insert "Sample", path
-    end
-    # getting-started
-    Dir.glob("intro/getting-started/**/*")
+    # guides
+    Dir.glob("guides/**/*")
       .find_all{ |f| File.stat(f).file? }.each do |path|
 
       index.insert "Guide", path
     end
-    # backends
-    Dir.glob("docs/backends/**/*")
+    # intro
+    Dir.glob("intro/**/*")
       .find_all{ |f| File.stat(f).file? }.each do |path|
 
-      index.insert "Environment", path
+      index.insert "Guide", path
     end
-    # configuration
-    Dir.glob("docs/configuration/**/*")
+    # upgrade-guides
+    Dir.glob("upgrade-guides/**/*")
       .find_all{ |f| File.stat(f).file? }.each do |path|
 
-      index.insert "Setting", path
+      index.insert "Guide", path
     end
-    # commands
-    Dir.glob("docs/commands/**/*")
+    # cli
+    Dir.glob("docs/cli/**/*")
       .find_all{ |f| File.stat(f).file? }.each do |path|
 
-      index.insert "Command", path
+      if path.match(/docs\/cli\/commands/)
+        index.insert "Command", path
+      else
+        index.insert "Class", path
+      end
     end
-    # import
-    Dir.glob("docs/import/**/*")
+    # cloud
+    Dir.glob("docs/cloud/**/*")
       .find_all{ |f| File.stat(f).file? }.each do |path|
 
-      index.insert "Section", path
+      if File.extname(path) == ".html"
+        index.insert "Callback", path
+      end
     end
-    # state
-    Dir.glob("docs/state/**/*")
+    # enterprise
+    Dir.glob("docs/enterprise/**/*")
       .find_all{ |f| File.stat(f).file? }.each do |path|
 
-      index.insert "Instance", path
+      if File.extname(path) == ".html"
+        index.insert "Element", path
+      end
+    end
+    # extend
+    Dir.glob("docs/extend/**/*")
+      .find_all{ |f| File.stat(f).file? }.each do |path|
+
+      index.insert "Extension", path
     end
     # providers
     Dir.glob("docs/providers/**/*")
@@ -260,39 +274,53 @@ task :create_index do
       next unless path.match(/\.html$/)
       maybe_type_code = path.split("/").reverse.drop(1).first
 
-      if maybe_type_code == "r"
+      case
+      when maybe_type_code == "r"
         type = "Resource"
-      elsif maybe_type_code == "d"
+      when maybe_type_code == "resources"
+        type = "Resource"
+      when maybe_type_code == "d"
         type = "Directive"
+      when maybe_type_code == "data-sources"
+        type = "Directive"
+      when maybe_type_code == "guides"
+        type = "Guide"
       else
         type = "Provider"
       end
 
       index.insert type, path
     end
-    # provisioners
-    Dir.glob("docs/provisioners/**/*")
-      .find_all{ |f| File.stat(f).file? }.each do |path|
-
-      index.insert "Provisioner", path
-    end
-    # modules
-    Dir.glob("docs/modules/**/*")
-      .find_all{ |f| File.stat(f).file? }.each do |path|
-
-      index.insert "Module", path
-    end
-    # plugins
-    Dir.glob("docs/plugins/**/*")
-      .find_all{ |f| File.stat(f).file? }.each do |path|
-
-      index.insert "Plugin", path
-    end
     # internals
     Dir.glob("docs/internals/**/*")
       .find_all{ |f| File.stat(f).file? }.each do |path|
 
       index.insert "Protocol", path
+    end
+    # language
+    Dir.glob("docs/language/**/*")
+      .find_all{ |f| File.stat(f).file? }.each do |path|
+
+      case
+      when path.match(/language\/functions/)
+        index.insert "Function", path
+      when path.match(/language\/modules/)
+        index.insert "Module", path
+      when path.match(/language\/resources/)
+        index.insert "Provisioner", path
+      when path.match(/language\/settings/)
+        index.insert "Environment", path
+      else
+        index.insert "Library", path
+      end
+    end
+    # registry
+    Dir.glob("docs/internals/**/*")
+      .find_all{ |f| File.stat(f).file? }.each do |path|
+
+      if File.extname(path) == ".html"
+        index.insert "Record", path
+      end
     end
   end
 end
