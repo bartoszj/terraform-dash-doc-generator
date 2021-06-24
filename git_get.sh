@@ -97,6 +97,10 @@ get_repositories "PaloAltoNetworks" "prismacloud"
 get_repositories "cyrilgdn" "rabbitmq"
 get_repositories "rancher" "rancher2"
 
+# Remove google-beta
+provider_names=( ${provider_names[@]/"terraform-provider-google-beta"} )
+provider_urls=( ${provider_urls[@]/"https://github.com/hashicorp/terraform-provider-google-beta.git"} )
+
 # Clone
 count=${#provider_names[@]}
 for i in ${!provider_names[@]}; do
@@ -114,6 +118,7 @@ for i in ${!provider_names[@]}; do
   echo "Clone $((i+1))/${count} ${name}"
   if [[ -d ${ext_provider_path} ]]; then
     if [[ $(git -C ${ext_provider_path} rev-parse --abbrev-ref HEAD) != "HEAD" ]]; then
+      git -C ${ext_provider_path} restore -- .
       git -C ${ext_provider_path} pull
     fi
   else
